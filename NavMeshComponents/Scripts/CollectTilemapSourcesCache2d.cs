@@ -20,8 +20,8 @@ namespace NavMeshPlus.Extensions
 
         protected override void Awake()
         {
-            _modifier ??= _tilemap.GetComponent<NavMeshModifier>();
-            _modifierTilemap ??= _tilemap.GetComponent<NavMeshModifierTilemap>();
+            if(!_modifier) _modifier = _tilemap.GetComponent<NavMeshModifier>();
+            if(!_modifierTilemap) _modifierTilemap = _tilemap.GetComponent<NavMeshModifierTilemap>();
             _modifierMap = _modifierTilemap.GetModifierMap();
             Order = -1000;
             base.Awake();

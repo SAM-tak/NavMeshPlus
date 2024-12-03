@@ -13,7 +13,7 @@ namespace NavMeshPlus.Extensions
     {
         public Dictionary<Sprite, Mesh> spriteMeshMap;
         public Dictionary<uint, Mesh> coliderMeshMap;
-        public Action<UnityEngine.Object, NavMeshBuildSource> lookupCallback;
+        public Action<Object, NavMeshBuildSource> lookupCallback;
         public int defaultArea;
         public int layerMask;
         public int agentID;
@@ -48,7 +48,7 @@ namespace NavMeshPlus.Extensions
             else
             {
                 mesh = new Mesh();
-                NavMeshBuilder2d.sprite2mesh(sprite, mesh);
+                NavMeshBuilder2d.SpriteToMesh(sprite, mesh);
                 spriteMeshMap.Add(sprite, mesh);
             }
             return mesh;
@@ -190,21 +190,18 @@ namespace NavMeshPlus.Extensions
         {
             if (builder.CollectGeometry == NavMeshCollectGeometry.PhysicsColliders)
             {
-                var collider = modifier.GetComponent<Collider2D>();
-                if (collider != null)
+                if (modifier.TryGetComponent<Collider2D>(out var collider))
                 {
                     CollectSources(sources, collider, area, builder);
                 }
             }
             else
             {
-                var tilemap = modifier.GetComponent<Tilemap>();
-                if (tilemap != null)
+                if (modifier.TryGetComponent<Tilemap>(out var tilemap))
                 {
                     CollectTileSources(sources, tilemap, area, builder);
                 }
-                var sprite = modifier.GetComponent<SpriteRenderer>();
-                if (sprite != null)
+                if (modifier.TryGetComponent<SpriteRenderer>(out var sprite))
                 {
                     CollectSources(sources, sprite, area, builder);
                 }
@@ -213,8 +210,7 @@ namespace NavMeshPlus.Extensions
 
         private static void AddDefaultWalkableTilemap(List<NavMeshBuildSource> sources, NavMeshBuilder2dState builder, NavMeshModifier modifier)
         {
-            var tilemap = modifier.GetComponent<Tilemap>();
-            if (tilemap != null)
+            if (modifier.TryGetComponent<Tilemap>(out var tilemap))
             {
                 if (builder.compressBounds)
                 {
@@ -234,19 +230,20 @@ namespace NavMeshPlus.Extensions
             {
                 return;
             }
-            Mesh mesh;
-            mesh = builder.GetMesh(spriteRenderer.sprite);
+            var mesh = builder.GetMesh(spriteRenderer.sprite);
             if (mesh == null)
             {
                 if (!builder.hideEditorLogs) Debug.Log($"{spriteRenderer.name} mesh is null");
                 return;
             }
-            var src = new NavMeshBuildSource();
-            src.shape = NavMeshBuildSourceShape.Mesh;
-            src.component = spriteRenderer;
-            src.area = area;
-            src.transform = Matrix4x4.TRS(Vector3.Scale(spriteRenderer.transform.position, builder.overrideVector), spriteRenderer.transform.rotation, spriteRenderer.transform.lossyScale);
-            src.sourceObject = mesh;
+            var src = new NavMeshBuildSource
+            {
+                shape = NavMeshBuildSourceShape.Mesh,
+                component = spriteRenderer,
+                area = area,
+                transform = Matrix4x4.TRS(Vector3.Scale(spriteRenderer.transform.position, builder.overrideVector), spriteRenderer.transform.rotation, spriteRenderer.transform.lossyScale),
+                sourceObject = mesh
+            };
             sources.Add(src);
 
             builder.lookupCallback?.Invoke(spriteRenderer.gameObject, src);
@@ -254,31 +251,32 @@ namespace NavMeshPlus.Extensions
 
         public static void CollectSources(List<NavMeshBuildSource> sources, Collider2D collider, int area, NavMeshBuilder2dState builder)
         { 
-            if (collider.usedByComposite)
+            if (collider.compositeOperation != Collider2D.CompositeOperation.None)
             {
                 collider = collider.GetComponent<CompositeCollider2D>();
             }
 
-            Mesh mesh;
-            mesh = builder.GetMesh(collider);
+            var mesh = builder.GetMesh(collider);
             if (mesh == null)
             {
                 if (!builder.hideEditorLogs) Debug.Log($"{collider.name} mesh is null");
                 return;
             }
 
-            var src = new NavMeshBuildSource();
-            src.shape = NavMeshBuildSourceShape.Mesh;
-            src.area = area;
-            src.component = collider;
-            src.sourceObject = mesh;
+            var src = new NavMeshBuildSource
+            {
+                shape = NavMeshBuildSourceShape.Mesh,
+                area = area,
+                component = collider,
+                sourceObject = mesh
+            };
             if (collider.attachedRigidbody)
             {
                 src.transform = Matrix4x4.TRS(Vector3.Scale(collider.attachedRigidbody.transform.position, builder.overrideVector), collider.attachedRigidbody.transform.rotation, Vector3.one);
             }
             else
             {
-                src.transform = Matrix4x4.identity;
+                src.transform = Matrix4x4.TRS(Vector3.Scale(new Vector3(0f, 0f, collider.transform.position.z), builder.overrideVector), Quaternion.identity, Vector3.one);
             }
 
             sources.Add(src);
@@ -313,8 +311,10 @@ namespace NavMeshPlus.Extensions
             {
                 for (int j = bound.yMin; j < bound.yMax; j++)
                 {
-                    var src = new NavMeshBuildSource();
-                    src.area = area;
+                    var src = new NavMeshBuildSource
+                    {
+                        area = area
+                    };
 
                     vec3int.x = i;
                     vec3int.y = j;
@@ -368,9 +368,9 @@ namespace NavMeshPlus.Extensions
             return Matrix4x4.TRS(Vector3.Scale(tilemap.GetCellCenterWorld(vec3int), scale) - tilemap.layoutGrid.cellGap, tilemap.transform.rotation, tilemap.transform.lossyScale) * tilemap.orientationMatrix * tilemap.GetTransformMatrix(vec3int);
         }
 
-        internal static void sprite2mesh(Sprite sprite, Mesh mesh)
+        internal static void SpriteToMesh(Sprite sprite, Mesh mesh)
         {
-            Vector3[] vert = new Vector3[sprite.vertices.Length];
+            var vert = new Vector3[sprite.vertices.Length];
             for (int i = 0; i < sprite.vertices.Length; i++)
             {
                 vert[i] = new Vector3(sprite.vertices[i].x, sprite.vertices[i].y, 0);
@@ -387,11 +387,13 @@ namespace NavMeshPlus.Extensions
 
         static private NavMeshBuildSource BoxBoundSource(Bounds localBounds)
         {
-            var src = new NavMeshBuildSource();
-            src.transform = Matrix4x4.Translate(localBounds.center);
-            src.shape = NavMeshBuildSourceShape.Box;
-            src.size = localBounds.size;
-            src.area = 0;
+            var src = new NavMeshBuildSource
+            {
+                transform = Matrix4x4.Translate(localBounds.center),
+                shape = NavMeshBuildSourceShape.Box,
+                size = localBounds.size,
+                area = 0
+            };
             return src;
         }
     }
