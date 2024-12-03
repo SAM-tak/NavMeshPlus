@@ -13,59 +13,59 @@ namespace NavMeshPlus.Components
     {
         [SerializeField, NavMeshAgent]
         int m_AgentTypeID;
-        public int agentTypeID { get { return m_AgentTypeID; } set { m_AgentTypeID = value; UpdateLink(); } }
+        public int agentTypeID { get => m_AgentTypeID; set { m_AgentTypeID = value; UpdateLink(); } }
 
         [SerializeField]
-        Vector3 m_StartPoint = new Vector3(0.0f, 0.0f, -2.5f);
-        public Vector3 startPoint { get { return m_StartPoint; } set { m_StartPoint = value; UpdateLink(); } }
+        Vector3 m_StartPoint = new(0.0f, 0.0f, -2.5f);
+        public Vector3 startPoint { get => m_StartPoint; set { m_StartPoint = value; UpdateLink(); } }
 
         [SerializeField]
-        Vector3 m_EndPoint = new Vector3(0.0f, 0.0f, 2.5f);
-        public Vector3 endPoint { get { return m_EndPoint; } set { m_EndPoint = value; UpdateLink(); } }
+        Vector3 m_EndPoint = new(0.0f, 0.0f, 2.5f);
+        public Vector3 endPoint { get => m_EndPoint; set { m_EndPoint = value; UpdateLink(); } }
 
         [SerializeField]
         float m_Width;
-        public float width { get { return m_Width; } set { m_Width = value; UpdateLink(); } }
+        public float width { get => m_Width; set { m_Width = value; UpdateLink(); } }
 
         [SerializeField]
         int m_CostModifier = -1;
-        public int costModifier { get { return m_CostModifier; } set { m_CostModifier = value; UpdateLink(); } }
+        public int costModifier { get => m_CostModifier; set { m_CostModifier = value; UpdateLink(); } }
 
         [SerializeField]
         bool m_Bidirectional = true;
-        public bool bidirectional { get { return m_Bidirectional; } set { m_Bidirectional = value; UpdateLink(); } }
+        public bool bidirectional { get => m_Bidirectional; set { m_Bidirectional = value; UpdateLink(); } }
 
         [SerializeField]
         bool m_AutoUpdatePosition;
-        public bool autoUpdate { get { return m_AutoUpdatePosition; } set { SetAutoUpdate(value); } }
+        public bool autoUpdate { get => m_AutoUpdatePosition; set { SetAutoUpdate(value); } }
 
         [SerializeField, NavMeshArea]
         int m_Area;
-        public int area { get { return m_Area; } set { m_Area = value; UpdateLink(); } }
+        public int area { get => m_Area; set { m_Area = value; UpdateLink(); } }
 
-        NavMeshLinkInstance m_LinkInstance = new NavMeshLinkInstance();
+        NavMeshLinkInstance m_LinkInstance = new();
 
         Vector3 m_LastPosition = Vector3.zero;
         Quaternion m_LastRotation = Quaternion.identity;
 
-        static readonly List<NavMeshLink> s_Tracked = new List<NavMeshLink>();
+        static readonly List<NavMeshLink> s_Tracked = new();
 
         void OnEnable()
         {
             AddLink();
-            if (m_AutoUpdatePosition && m_LinkInstance.valid)
+            if (m_AutoUpdatePosition && NavMesh.IsLinkValid(m_LinkInstance))
                 AddTracking(this);
         }
 
         void OnDisable()
         {
             RemoveTracking(this);
-            m_LinkInstance.Remove();
+            NavMesh.RemoveLink(m_LinkInstance);
         }
 
         public void UpdateLink()
         {
-            m_LinkInstance.Remove();
+            NavMesh.RemoveLink(m_LinkInstance);
             AddLink();
         }
 
@@ -107,24 +107,26 @@ namespace NavMeshPlus.Components
         void AddLink()
         {
 #if UNITY_EDITOR
-            if (m_LinkInstance.valid)
+            if (NavMesh.IsLinkValid(m_LinkInstance))
             {
                 Debug.LogError("Link is already added: " + this);
                 return;
             }
 #endif
 
-            var link = new NavMeshLinkData();
-            link.startPosition = m_StartPoint;
-            link.endPosition = m_EndPoint;
-            link.width = m_Width;
-            link.costModifier = m_CostModifier;
-            link.bidirectional = m_Bidirectional;
-            link.area = m_Area;
-            link.agentTypeID = m_AgentTypeID;
+            var link = new NavMeshLinkData
+            {
+                startPosition = m_StartPoint,
+                endPosition = m_EndPoint,
+                width = m_Width,
+                costModifier = m_CostModifier,
+                bidirectional = m_Bidirectional,
+                area = m_Area,
+                agentTypeID = m_AgentTypeID
+            };
             m_LinkInstance = NavMesh.AddLink(link, transform.position, transform.rotation);
-            if (m_LinkInstance.valid)
-                m_LinkInstance.owner = this;
+            if (NavMesh.IsLinkValid(m_LinkInstance))
+                NavMesh.SetLinkOwner(m_LinkInstance, this);
 
             m_LastPosition = transform.position;
             m_LastRotation = transform.rotation;
@@ -156,7 +158,7 @@ namespace NavMeshPlus.Components
         {
             m_Width = Mathf.Max(0.0f, m_Width);
 
-            if (!m_LinkInstance.valid)
+            if (!NavMesh.IsLinkValid(m_LinkInstance))
                 return;
 
             UpdateLink();

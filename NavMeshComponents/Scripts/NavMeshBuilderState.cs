@@ -62,7 +62,7 @@ namespace NavMeshPlus.Extensions
     partial class CompositeDisposable: IDisposable
     {
         private bool _disposed;
-        private List<IDisposable> extraStates = new List<IDisposable>();
+        private List<IDisposable> extraStates = new ();
 
         public void Add(IDisposable dispose)
         {

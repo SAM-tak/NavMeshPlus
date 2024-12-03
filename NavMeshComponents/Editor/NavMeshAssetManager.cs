@@ -16,8 +16,8 @@ namespace NavMeshPlus.Components.Editors
             public AsyncOperation bakeOperation;
         }
 
-        List<AsyncBakeOperation> m_BakeOperations = new List<AsyncBakeOperation>();
-        internal List<AsyncBakeOperation> GetBakeOperations() { return m_BakeOperations; }
+        List<AsyncBakeOperation> m_BakeOperations = new();
+        internal List<AsyncBakeOperation> GetBakeOperations() => m_BakeOperations;
 
         struct SavedPrefabNavMeshData
         {
@@ -25,7 +25,7 @@ namespace NavMeshPlus.Components.Editors
             public NavMeshData navMeshData;
         }
 
-        List<SavedPrefabNavMeshData> m_PrefabNavMeshDataAssets = new List<SavedPrefabNavMeshData>();
+        List<SavedPrefabNavMeshData> m_PrefabNavMeshDataAssets = new();
 
         static string GetAndEnsureTargetPath(NavMeshSurface surface)
         {

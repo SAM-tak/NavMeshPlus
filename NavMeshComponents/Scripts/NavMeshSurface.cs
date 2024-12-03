@@ -24,71 +24,71 @@ namespace NavMeshPlus.Components
     {
         [SerializeField, NavMeshAgent]
         int m_AgentTypeID;
-        public int agentTypeID { get { return m_AgentTypeID; } set { m_AgentTypeID = value; } }
+        public int agentTypeID { get => m_AgentTypeID; set { m_AgentTypeID = value; } }
 
         [SerializeField]
         CollectObjects m_CollectObjects = CollectObjects.All;
-        public CollectObjects collectObjects { get { return m_CollectObjects; } set { m_CollectObjects = value; } }
+        public CollectObjects collectObjects { get => m_CollectObjects; set { m_CollectObjects = value; } }
 
         [SerializeField]
-        Vector3 m_Size = new Vector3(10.0f, 10.0f, 10.0f);
-        public Vector3 size { get { return m_Size; } set { m_Size = value; } }
+        Vector3 m_Size = new(10.0f, 10.0f, 10.0f);
+        public Vector3 size { get => m_Size; set { m_Size = value; } }
 
         [SerializeField]
-        Vector3 m_Center = new Vector3(0, 2.0f, 0);
-        public Vector3 center { get { return m_Center; } set { m_Center = value; } }
+        Vector3 m_Center = new(0, 2.0f, 0);
+        public Vector3 center { get => m_Center; set { m_Center = value; } }
 
         [SerializeField]
         LayerMask m_LayerMask = ~0;
-        public LayerMask layerMask { get { return m_LayerMask; } set { m_LayerMask = value; } }
+        public LayerMask layerMask { get => m_LayerMask; set { m_LayerMask = value; } }
 
         [SerializeField]
         NavMeshCollectGeometry m_UseGeometry = NavMeshCollectGeometry.RenderMeshes;
-        public NavMeshCollectGeometry useGeometry { get { return m_UseGeometry; } set { m_UseGeometry = value; } }
+        public NavMeshCollectGeometry useGeometry { get => m_UseGeometry; set { m_UseGeometry = value; } }
 
         [SerializeField, NavMeshArea]
         int m_DefaultArea;
-        public int defaultArea { get { return m_DefaultArea; } set { m_DefaultArea = value; } }
+        public int defaultArea { get => m_DefaultArea; set { m_DefaultArea = value; } }
 
         [SerializeField]
         bool m_IgnoreNavMeshAgent = true;
-        public bool ignoreNavMeshAgent { get { return m_IgnoreNavMeshAgent; } set { m_IgnoreNavMeshAgent = value; } }
+        public bool ignoreNavMeshAgent { get => m_IgnoreNavMeshAgent; set { m_IgnoreNavMeshAgent = value; } }
 
         [SerializeField]
         bool m_IgnoreNavMeshObstacle = true;
-        public bool ignoreNavMeshObstacle { get { return m_IgnoreNavMeshObstacle; } set { m_IgnoreNavMeshObstacle = value; } }
+        public bool ignoreNavMeshObstacle { get => m_IgnoreNavMeshObstacle; set { m_IgnoreNavMeshObstacle = value; } }
 
         [SerializeField]
         bool m_OverrideTileSize;
-        public bool overrideTileSize { get { return m_OverrideTileSize; } set { m_OverrideTileSize = value; } }
+        public bool overrideTileSize { get => m_OverrideTileSize; set { m_OverrideTileSize = value; } }
         [SerializeField]
         int m_TileSize = 256;
-        public int tileSize { get { return m_TileSize; } set { m_TileSize = value; } }
+        public int tileSize { get => m_TileSize; set { m_TileSize = value; } }
         [SerializeField]
         bool m_OverrideVoxelSize;
-        public bool overrideVoxelSize { get { return m_OverrideVoxelSize; } set { m_OverrideVoxelSize = value; } }
+        public bool overrideVoxelSize { get => m_OverrideVoxelSize; set { m_OverrideVoxelSize = value; } }
         [SerializeField]
         float m_VoxelSize;
-        public float voxelSize { get { return m_VoxelSize; } set { m_VoxelSize = value; } }
+        public float voxelSize { get => m_VoxelSize; set { m_VoxelSize = value; } }
 
         // Currently not supported advanced options
         [SerializeField]
         bool m_BuildHeightMesh;
-        public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_BuildHeightMesh = value; } }
+        public bool buildHeightMesh { get => m_BuildHeightMesh; set { m_BuildHeightMesh = value; } }
 
         [SerializeField]
         float m_MinRegionArea = 0;
-        public float minRegionArea { get {  return m_MinRegionArea; } set { m_MinRegionArea = value; } }
+        public float minRegionArea { get => m_MinRegionArea; set { m_MinRegionArea = value; } }
         
         [SerializeField]
         bool m_HideEditorLogs;
-        public bool hideEditorLogs { get { return m_HideEditorLogs; } set { m_HideEditorLogs = value; } }
+        public bool hideEditorLogs { get => m_HideEditorLogs; set { m_HideEditorLogs = value; } }
 
         // Reference to whole scene navmesh data asset.
         [UnityEngine.Serialization.FormerlySerializedAs("m_BakedNavMeshData")]
         [SerializeField]
         NavMeshData m_NavMeshData;
-        public NavMeshData navMeshData { get { return m_NavMeshData; } set { m_NavMeshData = value; } }
+        public NavMeshData navMeshData { get => m_NavMeshData; set { m_NavMeshData = value; } }
 
         // Do not serialize - runtime only state.
         NavMeshDataInstance m_NavMeshDataInstance;
@@ -97,13 +97,10 @@ namespace NavMeshPlus.Components
 
         public NavMeshDataInstance navMeshDataInstance => m_NavMeshDataInstance;
 
-        static readonly List<NavMeshSurface> s_NavMeshSurfaces = new List<NavMeshSurface>();
+        static readonly List<NavMeshSurface> s_NavMeshSurfaces = new();
         public INavMeshExtensionsProvider NevMeshExtensions { get; set; } = new NavMeshExtensionsProvider();
 
-        public static List<NavMeshSurface> activeSurfaces
-        {
-            get { return s_NavMeshSurfaces; }
-        }
+        public static List<NavMeshSurface> activeSurfaces => s_NavMeshSurfaces;
 
         void OnEnable()
         {
@@ -353,12 +350,12 @@ namespace NavMeshPlus.Components
             {
                 if (m_CollectObjects == CollectObjects.All)
                 {
-                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                    UnityEditor.AI.NavMeshEditorHelpers.CollectSourcesInStage(
                         null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
                 }
                 else if (m_CollectObjects == CollectObjects.Children)
                 {
-                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                    UnityEditor.AI.NavMeshEditorHelpers.CollectSourcesInStage(
                         transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
                 }
                 else if (m_CollectObjects == CollectObjects.Volume)
@@ -366,7 +363,7 @@ namespace NavMeshPlus.Components
                     Matrix4x4 localToWorld = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
                     var worldBounds = GetWorldBounds(localToWorld, new Bounds(m_Center, m_Size));
 
-                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                    UnityEditor.AI.NavMeshEditorHelpers.CollectSourcesInStage(
                         worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
                 }
                 for (int i = 0; i < NevMeshExtensions.Count; ++i)
@@ -398,10 +395,10 @@ namespace NavMeshPlus.Components
             }
 
             if (m_IgnoreNavMeshAgent)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null));
+                sources.RemoveAll(x => x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null);
 
             if (m_IgnoreNavMeshObstacle)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
+                sources.RemoveAll(x => x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null);
 
             AppendModifierVolumes(ref sources);
 
@@ -410,7 +407,7 @@ namespace NavMeshPlus.Components
 
         static Vector3 Abs(Vector3 v)
         {
-            return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+            return new(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
 
         public static Bounds GetWorldBounds(Matrix4x4 mat, Bounds bounds)

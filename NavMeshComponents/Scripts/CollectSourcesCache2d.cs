@@ -10,7 +10,7 @@ namespace NavMeshPlus.Extensions
     public class CollectSourcesCache2d : NavMeshExtension
     {
         List<NavMeshBuildSource> _sources;
-        Dictionary<UnityEngine.Object, NavMeshBuildSource> _lookup;
+        Dictionary<Object, NavMeshBuildSource> _lookup;
         private Bounds _sourcesBounds;
         public bool IsDirty { get; protected set; }
 
@@ -19,11 +19,11 @@ namespace NavMeshPlus.Extensions
         public int SourcesCount => _sources.Count;
         public int CahcheCount => _lookup.Count;
 
-        public List<NavMeshBuildSource> Cache { get => _sources; }
+        public List<NavMeshBuildSource> Cache => _sources;
 
         protected override void Awake()
         {
-            _lookup = new Dictionary<UnityEngine.Object, NavMeshBuildSource>();
+            _lookup = new Dictionary<Object, NavMeshBuildSource>();
             _sources = new List<NavMeshBuildSource>();
             IsDirty = false;
             Order = -1000;

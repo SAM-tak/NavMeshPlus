@@ -17,11 +17,7 @@ namespace NavMeshPlus.Components.Editors
             m_Area = serializedObject.FindProperty("m_Area");
             m_IgnoreFromBuild = serializedObject.FindProperty("m_IgnoreFromBuild");
             m_OverrideArea = serializedObject.FindProperty("m_OverrideArea");
-
-
         }
-
-
 
         public override void OnInspectorGUI()
         {

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -35,11 +36,7 @@ namespace NavMeshPlus.Components.Editors
 
             s_SelectedID = 0;
             s_SelectedPoint = -1;
-
-
         }
-
-
 
         static Matrix4x4 UnscaledLocalToWorldMatrix(Transform t)
         {
@@ -82,17 +79,15 @@ namespace NavMeshPlus.Components.Editors
             GUILayout.Space(EditorGUIUtility.labelWidth);
             if (GUILayout.Button("Swap"))
             {
-                foreach (NavMeshLink navLink in targets)
+                foreach (NavMeshLink navLink in targets.Cast<NavMeshLink>())
                 {
-                    var tmp = navLink.startPoint;
-                    navLink.startPoint = navLink.endPoint;
-                    navLink.endPoint = tmp;
+                    (navLink.endPoint, navLink.startPoint) = (navLink.startPoint, navLink.endPoint);
                 }
                 SceneView.RepaintAll();
             }
             if (GUILayout.Button("Align Transform"))
             {
-                foreach (NavMeshLink navLink in targets)
+                foreach (NavMeshLink navLink in targets.Cast<NavMeshLink>())
                 {
                     Undo.RecordObject(navLink.transform, "Align Transform to End Points");
                     Undo.RecordObject(navLink, "Align Transform to End Points");
@@ -117,7 +112,7 @@ namespace NavMeshPlus.Components.Editors
         static Vector3 CalcLinkRight(NavMeshLink navLink)
         {
             var dir = navLink.endPoint - navLink.startPoint;
-            return (new Vector3(-dir.z, 0.0f, dir.x)).normalized;
+            return new Vector3(-dir.z, 0.0f, dir.x).normalized;
         }
 
         static void DrawLink(NavMeshLink navLink)
@@ -247,19 +242,19 @@ namespace NavMeshPlus.Components.Editors
             }
 
             EditorGUI.BeginChangeCheck();
-            pos = Handles.Slider(midPt + right * navLink.width * 0.5f, right, midSize * 0.03f, Handles.DotHandleCap, 0);
+            pos = Handles.Slider(midPt + navLink.width * 0.5f * right, right, midSize * 0.03f, Handles.DotHandleCap, 0);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");
-                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(right, (pos - midPt)));
+                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(right, pos - midPt));
             }
 
             EditorGUI.BeginChangeCheck();
-            pos = Handles.Slider(midPt - right * navLink.width * 0.5f, -right, midSize * 0.03f, Handles.DotHandleCap, 0);
+            pos = Handles.Slider(midPt - navLink.width * 0.5f * right, -right, midSize * 0.03f, Handles.DotHandleCap, 0);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");
-                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(-right, (pos - midPt)));
+                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(-right, pos - midPt));
             }
 
             Handles.color = oldColor;
@@ -272,7 +267,7 @@ namespace NavMeshPlus.Components.Editors
             GameObject go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Link", parent);
             go.AddComponent<NavMeshLink>();
             var view = SceneView.lastActiveSceneView;
-            if (view != null)
+            if (view)
                 view.MoveToView(go.transform);
         }
     }
