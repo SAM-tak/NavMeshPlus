@@ -12,19 +12,19 @@ namespace NavMeshPlus.Extensions
     {
         [SerializeField]
         bool m_OverrideByGrid;
-        public bool overrideByGrid { get { return m_OverrideByGrid; } set { m_OverrideByGrid = value; } }
+        public bool overrideByGrid { get => m_OverrideByGrid; set { m_OverrideByGrid = value; } }
 
         [SerializeField]
         GameObject m_UseMeshPrefab;
-        public GameObject useMeshPrefab { get { return m_UseMeshPrefab; } set { m_UseMeshPrefab = value; } }
+        public GameObject useMeshPrefab { get => m_UseMeshPrefab; set { m_UseMeshPrefab = value; } }
 
         [SerializeField]
         bool m_CompressBounds;
-        public bool compressBounds { get { return m_CompressBounds; } set { m_CompressBounds = value; } }
+        public bool compressBounds { get => m_CompressBounds; set { m_CompressBounds = value; } }
 
         [SerializeField]
         Vector3 m_OverrideVector = Vector3.one;
-        public Vector3 overrideVector { get { return m_OverrideVector; } set { m_OverrideVector = value; } }
+        public Vector3 overrideVector { get => m_OverrideVector; set { m_OverrideVector = value; } }
 
         public override void CalculateWorldBounds(NavMeshSurface surface, List<NavMeshBuildSource> sources, NavMeshBuilderState navNeshState)
         {
@@ -41,7 +41,7 @@ namespace NavMeshPlus.Extensions
 #else
             var grid = FindObjectOfType<Grid>();
 #endif
-            var tilemaps = grid?.GetComponentsInChildren<Tilemap>();
+            var tilemaps = grid ? grid.GetComponentsInChildren<Tilemap>() : null;
             if (tilemaps == null || tilemaps.Length < 1)
             {
                 return bounds;

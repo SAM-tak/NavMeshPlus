@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NavMeshPlus.Extensions
 {
@@ -28,8 +23,8 @@ namespace NavMeshPlus.Extensions
     }
     internal class NavMeshExtensionsProvider : INavMeshExtensionsProvider
     {
-        List<NavMeshExtensionMeta> _extensions = new List<NavMeshExtensionMeta>();
-        static Comparer<NavMeshExtensionMeta> Comparer = Comparer<NavMeshExtensionMeta>.Create((x, y) => x.order > y.order ? 1 : x.order < y.order ? -1 : 0);
+        readonly List<NavMeshExtensionMeta> _extensions = new();
+        static readonly Comparer<NavMeshExtensionMeta> Comparer = Comparer<NavMeshExtensionMeta>.Create((x, y) => x.order > y.order ? 1 : x.order < y.order ? -1 : 0);
         public NavMeshExtension this[int index] => _extensions[index].extension;
 
         public int Count => _extensions.Count;

@@ -165,12 +165,12 @@ namespace NavMeshPlus.Components.Editors
 
         public static GameObject CreateAndSelectGameObject(string suggestedName, GameObject parent)
         {
-            var parentTransform = parent != null ? parent.transform : null;
+            var parentTransform = parent ? parent.transform : null;
             var uniqueName = GameObjectUtility.GetUniqueNameForSibling(parentTransform, suggestedName);
             var child = new GameObject(uniqueName);
 
             Undo.RegisterCreatedObjectUndo(child, "Create " + uniqueName);
-            if (parentTransform != null)
+            if (parentTransform)
                 Undo.SetTransformParent(child.transform, parentTransform, "Parent " + uniqueName);
 
             Selection.activeGameObject = child;

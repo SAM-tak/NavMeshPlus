@@ -35,15 +35,15 @@ namespace NavMeshPlus.Components.Editors
 #endif
         class Styles
         {
-            public readonly GUIContent m_LayerMask = new GUIContent("Include Layers");
-			public readonly GUIContent m_MinRegionArea = new GUIContent("Minimum Region Area");
-            public readonly GUIContent m_ShowInputGeom = new GUIContent("Show Input Geom");
-            public readonly GUIContent m_ShowVoxels = new GUIContent("Show Voxels");
-            public readonly GUIContent m_ShowRegions = new GUIContent("Show Regions");
-            public readonly GUIContent m_ShowRawContours = new GUIContent("Show Raw Contours");
-            public readonly GUIContent m_ShowContours = new GUIContent("Show Contours");
-            public readonly GUIContent m_ShowPolyMesh = new GUIContent("Show Poly Mesh");
-            public readonly GUIContent m_ShowPolyMeshDetail = new GUIContent("Show Poly Mesh Detail");
+            public readonly GUIContent m_LayerMask = new("Include Layers");
+			public readonly GUIContent m_MinRegionArea = new("Minimum Region Area");
+            public readonly GUIContent m_ShowInputGeom = new("Show Input Geom");
+            public readonly GUIContent m_ShowVoxels = new("Show Voxels");
+            public readonly GUIContent m_ShowRegions = new("Show Regions");
+            public readonly GUIContent m_ShowRawContours = new("Show Raw Contours");
+            public readonly GUIContent m_ShowContours = new("Show Contours");
+            public readonly GUIContent m_ShowPolyMesh = new("Show Poly Mesh");
+            public readonly GUIContent m_ShowPolyMeshDetail = new("Show Poly Mesh Detail");
         }
 
         static Styles s_Styles;
@@ -54,12 +54,9 @@ namespace NavMeshPlus.Components.Editors
         static Color s_HandleColorSelected = new Color(127f, 214f, 244f, 210f) / 255;
         static Color s_HandleColorDisabled = new Color(127f * 0.75f, 214f * 0.75f, 244f * 0.75f, 100f) / 255;
 
-        BoxBoundsHandle m_BoundsHandle = new BoxBoundsHandle();
+        BoxBoundsHandle m_BoundsHandle = new();
 
-        bool editingCollider
-        {
-            get { return EditMode.editMode == EditMode.SceneViewEditMode.Collider && EditMode.IsOwner(this); }
-        }
+        bool editingCollider => EditMode.editMode == EditMode.SceneViewEditMode.Collider && EditMode.IsOwner(this);
 
         void OnEnable()
         {
@@ -102,8 +99,7 @@ namespace NavMeshPlus.Components.Editors
 
         public override void OnInspectorGUI()
         {
-            if (s_Styles == null)
-                s_Styles = new Styles();
+            s_Styles ??= new Styles();
 
             serializedObject.Update();
 
@@ -421,7 +417,7 @@ namespace NavMeshPlus.Components.Editors
             var go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Surface", parent);
             go.AddComponent<NavMeshSurface>();
             var view = SceneView.lastActiveSceneView;
-            if (view != null)
+            if (view)
                 view.MoveToView(go.transform);
         }
     }

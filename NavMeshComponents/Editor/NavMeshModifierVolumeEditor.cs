@@ -17,19 +17,17 @@ namespace NavMeshPlus.Components.Editors
         static Color s_HandleColor = new Color(187f, 138f, 240f, 210f) / 255;
         static Color s_HandleColorDisabled = new Color(187f * 0.75f, 138f * 0.75f, 240f * 0.75f, 100f) / 255;
 
-        BoxBoundsHandle m_BoundsHandle = new BoxBoundsHandle();
+        BoxBoundsHandle m_BoundsHandle = new();
 
-        bool editingCollider
-        {
-            get { return EditMode.editMode == EditMode.SceneViewEditMode.Collider && EditMode.IsOwner(this); }
-        }
+        bool editingCollider => EditMode.editMode == EditMode.SceneViewEditMode.Collider && EditMode.IsOwner(this);
 
         void OnEnable()
         {
             m_AffectedAgents = serializedObject.FindProperty("m_AffectedAgents");
             m_Area = serializedObject.FindProperty("m_Area");
             m_Center = serializedObject.FindProperty("m_Center");
-            m_Size = serializedObject.FindProperty("m_Size");        }
+            m_Size = serializedObject.FindProperty("m_Size");
+        }
 
         Bounds GetBounds()
         {
