@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.AI;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 namespace NavMeshPlus.Components.Editors
 {
@@ -76,7 +77,7 @@ namespace NavMeshPlus.Components.Editors
             if (PrefabUtility.IsPartOfPrefabInstance(navSurface) && !PrefabUtility.IsPartOfModelPrefab(navSurface))
             {
                 // Don't allow deleting the asset belonging to the prefab parent
-                var parentSurface = PrefabUtility.GetCorrespondingObjectFromSource(navSurface) as NavMeshSurface;
+                var parentSurface = PrefabUtility.GetCorrespondingObjectFromSource(navSurface);
                 if (parentSurface && navSurface.navMeshData == parentSurface.navMeshData)
                     return null;
             }
@@ -85,6 +86,11 @@ namespace NavMeshPlus.Components.Editors
             var prefabStage = PrefabStageUtility.GetPrefabStage(navSurface.gameObject);
             var isPartOfPrefab = prefabStage != null && prefabStage.IsPartOfPrefabContents(navSurface.gameObject);
             if (isPartOfPrefab && IsCurrentPrefabNavMeshDataStored(navSurface))
+                return null;
+
+            // Do not delete if asset directory change
+            var navMeshDataPath = AssetDatabase.GetAssetPath(navSurface.navMeshData);
+            if (!string.IsNullOrEmpty(navMeshDataPath) && GetAndEnsureTargetPath(navSurface) != Path.GetDirectoryName(navMeshDataPath))
                 return null;
 
             return navSurface.navMeshData;
@@ -181,9 +187,9 @@ namespace NavMeshPlus.Components.Editors
             return false;
         }
 
-        public void ClearSurfaces(UnityEngine.Object[] surfaces)
+        public void ClearSurfaces(Object[] surfaces)
         {
-            foreach (NavMeshSurface s in surfaces)
+            foreach (var s in surfaces.Cast<NavMeshSurface>())
                 ClearSurface(s);
         }
 
