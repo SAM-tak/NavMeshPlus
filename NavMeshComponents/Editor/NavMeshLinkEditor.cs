@@ -17,7 +17,7 @@ namespace NavMeshPlus.Components.Editors
         SerializedProperty m_StartPoint;
         SerializedProperty m_Width;
 
-        static int s_SelectedID;
+        static EntityId s_SelectedID;
         static int s_SelectedPoint = -1;
 
         static Color s_HandleColor = new Color(255f, 167f, 39f, 210f) / 255;
@@ -43,7 +43,7 @@ namespace NavMeshPlus.Components.Editors
             m_StartPoint = serializedObject.FindProperty("m_StartPoint");
             m_Width = serializedObject.FindProperty("m_Width");
 
-            s_SelectedID = 0;
+            s_SelectedID = EntityId.None;
             s_SelectedPoint = -1;
         }
 
