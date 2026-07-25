@@ -17,20 +17,27 @@ namespace NavMeshPlus.Components.Editors
         SerializedProperty m_StartPoint;
         SerializedProperty m_Width;
 
+#if UNITY_6000_0_OR_NEWER
         static EntityId s_SelectedID;
+#else
+        static int s_SelectedID;
+#endif
         static int s_SelectedPoint = -1;
 
         static Color s_HandleColor = new Color(255f, 167f, 39f, 210f) / 255;
         static Color s_HandleColorDisabled = new Color(255f * 0.75f, 167f * 0.75f, 39f * 0.75f, 100f) / 255;
 
+#if UNITY_6000_0_OR_NEWER
+        static EntityId GetObjectId(Object obj)
+        {
+            return obj.GetEntityId();
+        }
+#else
         static int GetObjectId(Object obj)
         {
-#if UNITY_6000_0_OR_NEWER
-            return obj.GetEntityId().GetHashCode();
-#else
             return obj.GetInstanceID();
-#endif
         }
+#endif
 
         void OnEnable()
         {
@@ -43,7 +50,11 @@ namespace NavMeshPlus.Components.Editors
             m_StartPoint = serializedObject.FindProperty("m_StartPoint");
             m_Width = serializedObject.FindProperty("m_Width");
 
+#if UNITY_6000_0_OR_NEWER
             s_SelectedID = EntityId.None;
+#else
+            s_SelectedID = 0;
+#endif
             s_SelectedPoint = -1;
         }
 
