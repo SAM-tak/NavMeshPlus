@@ -260,7 +260,7 @@ namespace NavMeshPlus.Extensions
             if (collider.usedByComposite)
 #endif
             {
-                collider = collider.GetComponent<CompositeCollider2D>();
+                collider = collider.composite;
             }
 
             Mesh mesh;
